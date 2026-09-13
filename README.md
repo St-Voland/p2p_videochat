@@ -27,8 +27,10 @@ GitHub Pages serves the static client over HTTPS, so camera and microphone permi
 2. On computer A, choose **Create invitation**, then copy the generated code to computer B by any separate channel.
 3. On computer B, paste it and choose **Answer invitation**, then send the returned code back to computer A.
 4. On computer A, paste the answer and choose **Complete connection**.
-
+l
 The generated codes include ICE candidates, so this exchange only happens once per connection. A public STUN server helps discover network paths; some restrictive networks still require TURN, which would be a relay service and is outside the pure no-server mode.
+
+The app can prepare these messages for email without a backend: enter **Your email** and **Peer email**, then use **Create invitation email** or **Create answer email**. GitHub Pages opens the device's default mail composer with a prefilled message; it cannot send mail itself. The recipient should paste the complete received message, including its `FIELDLINE CONNECTION CODE` markers, into the matching field.
 
 ### Verify the peer
 

@@ -29,6 +29,8 @@ const elements = {
     boardSync: document.getElementById('boardSync'),
     invitationCode: document.getElementById('invitationCode'),
     answerCode: document.getElementById('answerCode'),
+    localEmail: document.getElementById('localEmail'),
+    peerEmail: document.getElementById('peerEmail'),
     createOfferButton: document.getElementById('createOfferButton'),
     acceptOfferButton: document.getElementById('acceptOfferButton'),
     acceptAnswerButton: document.getElementById('acceptAnswerButton'),
@@ -141,31 +143,77 @@ async function joinRoom(event) {
 async function createInvitation() {
     const session = getPeerSession();
     if (!session) return;
+    if (!validEmailPair()) return;
     try {
-        elements.invitationCode.value = await session.createInvitation();
+        const code = await session.createInvitation();
+        const message = createMailMessage('FIELDLINE INVITATION', elements.localEmail.value.trim(), elements.peerEmail.value.trim(), code);
+        elements.invitationCode.value = message;
+        openMailComposer(elements.peerEmail.value.trim(), 'Fieldline invitation', message);
         setStatus('connecting', 'Invitation ready');
-        setNotice('Send this invitation code to the other computer.');
+        setNotice('Your mail app has an invitation ready. Send the complete message to your peer.');
     } catch (error) { setNotice(`Could not create invitation: ${error.message}`); }
 }
 
 async function answerInvitation() {
     const session = getPeerSession();
     if (!session) return;
+    const invitation = extractMailMessage(elements.invitationCode.value, 'offer');
+    if (!invitation) return;
+    elements.peerEmail.value = invitation.from || elements.peerEmail.value;
+    if (!validEmailPair()) return;
     try {
-        elements.answerCode.value = await session.answerInvitation(elements.invitationCode.value.trim());
+        const code = await session.answerInvitation(invitation.code);
+        const message = createMailMessage('FIELDLINE ANSWER', elements.localEmail.value.trim(), elements.peerEmail.value.trim(), code);
+        elements.answerCode.value = message;
+        openMailComposer(elements.peerEmail.value.trim(), 'Fieldline answer', message);
         setStatus('connecting', 'Answer ready');
-        setNotice('Send this answer code back to the person who created the invitation.');
+        setNotice('Your mail app has an answer ready. Send the complete message back to the inviter.');
     } catch (error) { setNotice(`Could not answer invitation: ${error.message}`); }
 }
 
 async function completeConnection() {
     const session = getPeerSession();
     if (!session) return;
+    const answer = extractMailMessage(elements.answerCode.value, 'answer');
+    if (!answer) return;
     try {
-        await session.completeConnection(elements.answerCode.value.trim());
+        await session.completeConnection(answer.code);
         setStatus('connecting', 'Connecting peer');
         setNotice('Waiting for the direct connection to open.');
     } catch (error) { setNotice(`Could not complete connection: ${error.message}`); }
+}
+
+function validEmailPair() {
+    if (elements.localEmail.validity.valid && elements.peerEmail.validity.valid && elements.localEmail.value && elements.peerEmail.value) return true;
+    setNotice('Enter both your email and your peer email before creating or answering an email.');
+    return false;
+}
+
+function createMailMessage(title, from, to, code) {
+    return `${title}\nFrom: ${from}\nTo: ${to}\n\nFIELDLINE CONNECTION CODE\n${code}\nEND FIELDLINE CODE\n\nThis message contains a temporary WebRTC connection code. Send it only to the intended peer.`;
+}
+
+function extractMailMessage(message, expectedType) {
+    const codeMatch = message.match(/FIELDLINE CONNECTION CODE\s*([\s\S]*?)\s*END FIELDLINE CODE/i);
+    if (!codeMatch) {
+        setNotice('Paste the complete Fieldline email, including the connection code markers.');
+        return null;
+    }
+    let code;
+    try { code = JSON.parse(codeMatch[1].trim()); } catch {
+        setNotice('The pasted email contains an invalid connection code.');
+        return null;
+    }
+    if (code.type !== expectedType) {
+        setNotice(`This is not a valid Fieldline ${expectedType} message.`);
+        return null;
+    }
+    const from = message.match(/^From:\s*(.+)$/im)?.[1]?.trim() || '';
+    return { code: codeMatch[1].trim(), from };
+}
+
+function openMailComposer(recipient, subject, body) {
+    window.location.href = `mailto:${encodeURIComponent(recipient)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 }
 
 function handleConnectionState(state) {

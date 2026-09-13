@@ -69,20 +69,26 @@
                 <div class="manual-connect">
                     <p class="manual-connect-title">Direct connection</p>
                     <ol class="connection-steps" id="connectionSteps">
-                        <li>Computer A clicks <strong>Create invitation</strong> and sends its invitation below.</li>
-                        <li>Computer B pastes that invitation and clicks <strong>Answer invitation</strong>.</li>
-                        <li>Computer B sends the answer back. Computer A pastes it and clicks <strong>Complete connection</strong>.</li>
+                        <li>Enter both email addresses. Computer A clicks <strong>Create invitation email</strong> and sends it from the opened mail app.</li>
+                        <li>Computer B pastes the entire invitation email below, then clicks <strong>Create answer email</strong>.</li>
+                        <li>Computer A pastes the entire answer email below, then clicks <strong>Complete connection</strong>.</li>
                     </ol>
-                    <div class="signal-field">
-                        <label for="invitationCode">Invitation code <span>created by computer A</span></label>
-                        <textarea id="invitationCode" rows="4" placeholder="Paste the invitation here"></textarea>
-                        <button class="control-button" id="createOfferButton" type="button">Create invitation</button>
+                    <div class="email-fields">
+                        <label for="localEmail">Your email</label>
+                        <input id="localEmail" type="email" autocomplete="email" placeholder="you@example.com">
+                        <label for="peerEmail">Peer email <span>used for the mail composer</span></label>
+                        <input id="peerEmail" type="email" autocomplete="email" placeholder="peer@example.com">
                     </div>
                     <div class="signal-field">
-                        <label for="answerCode">Answer code <span>created by computer B</span></label>
-                        <textarea id="answerCode" rows="4" placeholder="Paste the answer here"></textarea>
+                        <label for="invitationCode">Invitation email <span>paste the entire message</span></label>
+                        <textarea id="invitationCode" rows="5" placeholder="Paste the complete invitation email here"></textarea>
+                        <button class="control-button" id="createOfferButton" type="button">Create invitation email</button>
+                        <button class="control-button" id="acceptOfferButton" type="button">Create answer email</button>
+                    </div>
+                    <div class="signal-field">
+                        <label for="answerCode">Answer email <span>paste the entire message</span></label>
+                        <textarea id="answerCode" rows="5" placeholder="Paste the complete answer email here"></textarea>
                         <div class="media-controls">
-                            <button class="control-button" id="acceptOfferButton" type="button">Answer invitation</button>
                             <button class="control-button" id="acceptAnswerButton" type="button">Complete connection</button>
                         </div>
                     </div>
