@@ -82,6 +82,18 @@ h2 { margin: 0; font-size: 1.2rem; letter-spacing: -.02em; }
 .control-icon { margin-right: 6px; color: var(--coral-dark); font-family: 'DM Mono', monospace; font-size: 9px; }
 .notice, .board-caption { color: var(--muted); font-size: 10px; line-height: 1.5; }
 .notice { margin: 15px 0 0; }
+.manual-connect { margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); }
+.manual-connect-title { margin: 0 0 7px; font-size: 12px; font-weight: 600; }
+.connection-steps { margin: 12px 0 18px; padding-left: 20px; color: var(--muted); font-size: 11px; line-height: 1.55; }
+.connection-steps li + li { margin-top: 5px; }
+.connection-steps strong { color: var(--ink); font-weight: 600; }
+.signal-field + .signal-field { margin-top: 14px; }
+.signal-field label { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 6px; color: var(--ink); font-family: 'DM Mono', monospace; font-size: 10px; text-transform: uppercase; letter-spacing: .08em; }
+.signal-field label span { color: var(--muted); font-size: 9px; text-align: right; }
+.signal-field textarea { display: block; width: 100%; min-height: 86px; padding: 10px; resize: vertical; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 2px; font-family: 'DM Mono', monospace; font-size: 10px; line-height: 1.4; }
+.signal-field textarea:focus { border-color: var(--coral); outline: none; box-shadow: 0 0 0 3px rgba(232,93,63,.12); }
+.signal-field > .control-button { margin-top: 8px; }
+.control-button:disabled { cursor: not-allowed; opacity: .45; }
 .board-heading { margin-bottom: 18px; }
 .sync-label { color: var(--muted); font-size: 10px; }
 .board-tools { gap: 14px; margin-bottom: 10px; padding: 9px 12px; background: var(--panel); border: 1px solid var(--line); }

@@ -68,12 +68,23 @@
                 </div>
                 <div class="manual-connect">
                     <p class="manual-connect-title">Direct connection</p>
-                    <p class="microcopy">No server is used. Exchange these connection codes by chat, email, or QR.</p>
-                    <textarea id="signalCode" rows="4" placeholder="Invitation or answer code"></textarea>
-                    <div class="media-controls">
+                    <ol class="connection-steps" id="connectionSteps">
+                        <li>Computer A clicks <strong>Create invitation</strong> and sends its invitation below.</li>
+                        <li>Computer B pastes that invitation and clicks <strong>Answer invitation</strong>.</li>
+                        <li>Computer B sends the answer back. Computer A pastes it and clicks <strong>Complete connection</strong>.</li>
+                    </ol>
+                    <div class="signal-field">
+                        <label for="invitationCode">Invitation code <span>created by computer A</span></label>
+                        <textarea id="invitationCode" rows="4" placeholder="Paste the invitation here"></textarea>
                         <button class="control-button" id="createOfferButton" type="button">Create invitation</button>
-                        <button class="control-button" id="acceptOfferButton" type="button">Answer invitation</button>
-                        <button class="control-button" id="acceptAnswerButton" type="button">Complete connection</button>
+                    </div>
+                    <div class="signal-field">
+                        <label for="answerCode">Answer code <span>created by computer B</span></label>
+                        <textarea id="answerCode" rows="4" placeholder="Paste the answer here"></textarea>
+                        <div class="media-controls">
+                            <button class="control-button" id="acceptOfferButton" type="button">Answer invitation</button>
+                            <button class="control-button" id="acceptAnswerButton" type="button">Complete connection</button>
+                        </div>
                     </div>
                 </div>
                 <p class="notice" id="notice" role="status">Joining a room opens the board and requests camera access.</p>

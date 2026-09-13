@@ -27,7 +27,8 @@ const elements = {
     undoButton: document.getElementById('undoButton'),
     clearButton: document.getElementById('clearButton'),
     boardSync: document.getElementById('boardSync'),
-    signalCode: document.getElementById('signalCode'),
+    invitationCode: document.getElementById('invitationCode'),
+    answerCode: document.getElementById('answerCode'),
     createOfferButton: document.getElementById('createOfferButton'),
     acceptOfferButton: document.getElementById('acceptOfferButton'),
     acceptAnswerButton: document.getElementById('acceptAnswerButton')
@@ -45,6 +46,21 @@ function setStatus(state, text) {
 
 function setNotice(text) { elements.notice.textContent = text; }
 
+function setConnectionControlsEnabled(enabled) {
+    elements.createOfferButton.disabled = !enabled;
+    elements.acceptOfferButton.disabled = !enabled;
+    elements.acceptAnswerButton.disabled = !enabled;
+}
+
+function getPeerSession() {
+    if (!peerSession) {
+        setStatus('idle', 'Join room first');
+        setNotice('Join the room and wait for the board to finish loading before exchanging connection codes.');
+        return null;
+    }
+    return peerSession;
+}
+
 function setRoomFromUrl() {
     const room = new URLSearchParams(window.location.search).get('room');
     if (room) elements.roomCode.value = room;
@@ -60,6 +76,7 @@ async function joinRoom(event) {
     window.history.replaceState({}, '', `?room=${encodeURIComponent(room)}`);
     elements.joinPanel.hidden = true;
     elements.workspace.hidden = false;
+    setConnectionControlsEnabled(false);
     sharedBoard = new SharedBoard(elements.boardCanvas, (message) => peerSession?.send(message));
 
     let mediaMessage = '';
@@ -98,34 +115,42 @@ async function joinRoom(event) {
             }
         });
         await peerSession.start(localStream);
+        setConnectionControlsEnabled(true);
         setStatus('idle', 'Ready for invitation');
         setNotice(mediaMessage || 'Create an invitation, then exchange the code with the other computer.');
     } catch (error) {
         peerSession = null;
+        setConnectionControlsEnabled(false);
         setStatus('idle', 'Board only');
         setNotice(`${mediaMessage ? `${mediaMessage} ` : ''}Peer connection unavailable: ${error.message}`);
     }
 }
 
 async function createInvitation() {
+    const session = getPeerSession();
+    if (!session) return;
     try {
-        elements.signalCode.value = await peerSession.createInvitation();
+        elements.invitationCode.value = await session.createInvitation();
         setStatus('connecting', 'Invitation ready');
         setNotice('Send this invitation code to the other computer.');
     } catch (error) { setNotice(`Could not create invitation: ${error.message}`); }
 }
 
 async function answerInvitation() {
+    const session = getPeerSession();
+    if (!session) return;
     try {
-        elements.signalCode.value = await peerSession.answerInvitation(elements.signalCode.value.trim());
+        elements.answerCode.value = await session.answerInvitation(elements.invitationCode.value.trim());
         setStatus('connecting', 'Answer ready');
         setNotice('Send this answer code back to the person who created the invitation.');
     } catch (error) { setNotice(`Could not answer invitation: ${error.message}`); }
 }
 
 async function completeConnection() {
+    const session = getPeerSession();
+    if (!session) return;
     try {
-        await peerSession.completeConnection(elements.signalCode.value.trim());
+        await session.completeConnection(elements.answerCode.value.trim());
         setStatus('connecting', 'Connecting peer');
         setNotice('Waiting for the direct connection to open.');
     } catch (error) { setNotice(`Could not complete connection: ${error.message}`); }
@@ -175,6 +200,7 @@ function leaveRoom() {
     elements.workspace.hidden = true;
     elements.joinPanel.hidden = false;
     elements.joinForm.querySelector('button').disabled = false;
+    setConnectionControlsEnabled(false);
     setStatus('idle', 'Ready to connect');
     setNotice('Camera and microphone are requested after you join. The board is ready immediately.');
 }
@@ -196,3 +222,4 @@ elements.acceptOfferButton.addEventListener('click', answerInvitation);
 elements.acceptAnswerButton.addEventListener('click', completeConnection);
 window.addEventListener('beforeunload', leaveRoom);
 setRoomFromUrl();
+setConnectionControlsEnabled(false);

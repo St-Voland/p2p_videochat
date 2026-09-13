@@ -42,3 +42,6 @@ The static client must not contain private TURN credentials. Configure a TURN pr
 ## Current scope
 
 This is intentionally ephemeral: no accounts, durable rooms, server-side board history, screen sharing, or multiparty rooms. The board synchronizes after the WebRTC data channel opens and can send a snapshot to a late joiner.
+
+
+https://st-voland.github.io/p2p_videochat/?room=lana
