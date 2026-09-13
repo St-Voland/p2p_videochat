@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#17211b">
+    <title>Fieldline | P2P video board</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <main class="app-shell">
+        <header class="topbar">
+            <div>
+                <p class="eyebrow">FIELDLINE / PEER ROOM</p>
+                <h1>Talk, sketch, stay in the room.</h1>
+            </div>
+            <div class="connection-pill" id="connectionStatus" data-state="idle">
+                <span class="status-dot"></span>
+                <span id="connectionText">Ready to connect</span>
+            </div>
+        </header>
+
+        <section class="join-panel" id="joinPanel">
+            <div class="join-copy">
+                <span class="section-index">01</span>
+                <div>
+                    <h2>Open a private room</h2>
+                    <p>Use the same room code in two browser tabs. Your camera, audio, and board stay peer-to-peer.</p>
+                </div>
+            </div>
+            <form class="join-form" id="joinForm">
+                <label for="roomCode">Room code</label>
+                <div class="room-input-row">
+                    <input id="roomCode" name="roomCode" autocomplete="off" maxlength="32" placeholder="e.g. north-star" required>
+                    <button class="button button-primary" type="submit">Join room <span aria-hidden="true">↗</span></button>
+                </div>
+                <p class="microcopy" id="joinHint">Camera and microphone are requested after joining. The board still works if media is unavailable.</p>
+            </form>
+        </section>
+
+        <section class="workspace" id="workspace" hidden>
+            <div class="media-column">
+                <div class="column-heading">
+                    <div>
+                        <span class="section-index">02</span>
+                        <h2>Live line</h2>
+                    </div>
+                    <button class="button button-quiet" id="leaveButton" type="button">Leave room</button>
+                </div>
+                <div class="video-grid">
+                    <article class="video-card local-video-card">
+                        <video id="localVideo" autoplay muted playsinline></video>
+                        <span class="video-label">You <span id="localMediaState">camera / mic</span></span>
+                    </article>
+                    <article class="video-card remote-video-card">
+                        <video id="remoteVideo" autoplay playsinline></video>
+                        <div class="remote-placeholder" id="remotePlaceholder">
+                            <span class="placeholder-mark">+</span>
+                            <span>Waiting for another person</span>
+                        </div>
+                        <span class="video-label">Remote peer</span>
+                    </article>
+                </div>
+                <div class="media-controls" aria-label="Media controls">
+                    <button class="control-button" id="micButton" type="button" aria-pressed="false"><span class="control-icon">mic</span><span id="micLabel">Mute mic</span></button>
+                    <button class="control-button" id="cameraButton" type="button" aria-pressed="false"><span class="control-icon">cam</span><span id="cameraLabel">Stop camera</span></button>
+                    <button class="control-button" id="copyButton" type="button"><span class="control-icon">link</span><span>Copy room link</span></button>
+                </div>
+                <p class="notice" id="notice" role="status">Joining a room opens the board and requests camera access.</p>
+            </div>
+
+            <div class="board-column">
+                <div class="column-heading board-heading">
+                    <div>
+                        <span class="section-index">03</span>
+                        <h2>Shared board</h2>
+                    </div>
+                    <span class="sync-label" id="boardSync">Local canvas</span>
+                </div>
+                <div class="board-tools">
+                    <label class="tool-label" for="brushColor">Ink <input id="brushColor" type="color" value="#e85d3f" title="Ink color"></label>
+                    <label class="tool-label" for="brushSize">Weight <input id="brushSize" type="range" min="2" max="28" value="7"><span id="brushSizeValue">7</span></label>
+                    <button class="tool-button" id="undoButton" type="button" title="Undo last stroke">Undo</button>
+                    <button class="tool-button" id="clearButton" type="button" title="Clear board">Clear</button>
+                </div>
+                <div class="canvas-frame">
+                    <canvas id="boardCanvas" width="1200" height="760" aria-label="Shared drawing board"></canvas>
+                </div>
+                <p class="board-caption">Draw with a mouse, trackpad, or touch. Strokes sync when a peer connection is open.</p>
+            </div>
+        </section>
+
+        <footer class="footer-note">
+            <span>EPHEMERAL BY DESIGN</span>
+            <span>WebRTC / DATA CHANNEL / NO ACCOUNT</span>
+        </footer>
+    </main>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
