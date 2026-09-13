@@ -13,6 +13,14 @@ python3 -m http.server 8000
 
 Open `http://localhost:8000/p2p_videochat/` in two browser tabs. Enter the same room code in both tabs. The local prototype uses `BroadcastChannel` for signaling, so both tabs must share the same origin. Joining opens the board even if camera or microphone permission is denied; media is an independent enhancement.
 
+## Deploy to GitHub Pages
+
+The repository includes an Actions workflow at `.github/workflows/pages.yml`. Push to `master`, then in the repository settings choose **Pages -> Build and deployment -> Source: GitHub Actions**. The site will be published at:
+
+`https://st-voland.github.io/p2p_videochat/`
+
+GitHub Pages serves the static client over HTTPS, so camera and microphone permissions can work there. The current `BroadcastSignaling` adapter only connects tabs sharing the same browser origin; it does not connect different devices. For real remote rooms, replace it with a hosted signaling adapter such as Supabase Realtime, Firebase, or a small WebSocket service. GitHub Pages cannot run that signaling server itself.
+
 ## Architecture
 
 - `js/signaling.js` contains the replaceable signaling boundary. `BroadcastSignaling` is a local same-origin adapter for development.
