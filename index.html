@@ -25,7 +25,7 @@
                 <span class="section-index">01</span>
                 <div>
                     <h2>Open a private room</h2>
-                    <p>Use the same room code in two browser tabs. Your camera, audio, and board stay peer-to-peer.</p>
+                    <p>Use the same room code on two computers. Your camera, audio, and board stay peer-to-peer.</p>
                 </div>
             </div>
             <form class="join-form" id="joinForm">
@@ -65,6 +65,16 @@
                     <button class="control-button" id="micButton" type="button" aria-pressed="false"><span class="control-icon">mic</span><span id="micLabel">Mute mic</span></button>
                     <button class="control-button" id="cameraButton" type="button" aria-pressed="false"><span class="control-icon">cam</span><span id="cameraLabel">Stop camera</span></button>
                     <button class="control-button" id="copyButton" type="button"><span class="control-icon">link</span><span>Copy room link</span></button>
+                </div>
+                <div class="manual-connect">
+                    <p class="manual-connect-title">Direct connection</p>
+                    <p class="microcopy">No server is used. Exchange these connection codes by chat, email, or QR.</p>
+                    <textarea id="signalCode" rows="4" placeholder="Invitation or answer code"></textarea>
+                    <div class="media-controls">
+                        <button class="control-button" id="createOfferButton" type="button">Create invitation</button>
+                        <button class="control-button" id="acceptOfferButton" type="button">Answer invitation</button>
+                        <button class="control-button" id="acceptAnswerButton" type="button">Complete connection</button>
+                    </div>
                 </div>
                 <p class="notice" id="notice" role="status">Joining a room opens the board and requests camera access.</p>
             </div>

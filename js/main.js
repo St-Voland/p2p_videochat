@@ -1,5 +1,5 @@
 import { SharedBoard } from './board.js';
-import { BroadcastSignaling } from './signaling.js';
+import { ManualSignaling } from './signaling.js';
 import { PeerSession } from './webrtc.js';
 
 const elements = {
@@ -26,7 +26,11 @@ const elements = {
     brushSizeValue: document.getElementById('brushSizeValue'),
     undoButton: document.getElementById('undoButton'),
     clearButton: document.getElementById('clearButton'),
-    boardSync: document.getElementById('boardSync')
+    boardSync: document.getElementById('boardSync'),
+    signalCode: document.getElementById('signalCode'),
+    createOfferButton: document.getElementById('createOfferButton'),
+    acceptOfferButton: document.getElementById('acceptOfferButton'),
+    acceptAnswerButton: document.getElementById('acceptAnswerButton')
 };
 
 let localStream = null;
@@ -73,7 +77,7 @@ async function joinRoom(event) {
     }
 
     try {
-        peerSession = new PeerSession(new BroadcastSignaling(), {
+        peerSession = new PeerSession(new ManualSignaling(), {
             onRemoteStream: (stream) => {
                 elements.remoteVideo.srcObject = stream;
                 elements.remotePlaceholder.hidden = true;
@@ -93,14 +97,38 @@ async function joinRoom(event) {
                 setNotice('Your room is still open. A peer can rejoin with the same code.');
             }
         });
-        await peerSession.start(currentRoom, localStream);
-        setStatus('connecting', 'Waiting for peer');
-        setNotice(mediaMessage || 'Share the room link, then keep this tab open while the peer joins.');
+        await peerSession.start(localStream);
+        setStatus('idle', 'Ready for invitation');
+        setNotice(mediaMessage || 'Create an invitation, then exchange the code with the other computer.');
     } catch (error) {
         peerSession = null;
         setStatus('idle', 'Board only');
         setNotice(`${mediaMessage ? `${mediaMessage} ` : ''}Peer connection unavailable: ${error.message}`);
     }
+}
+
+async function createInvitation() {
+    try {
+        elements.signalCode.value = await peerSession.createInvitation();
+        setStatus('connecting', 'Invitation ready');
+        setNotice('Send this invitation code to the other computer.');
+    } catch (error) { setNotice(`Could not create invitation: ${error.message}`); }
+}
+
+async function answerInvitation() {
+    try {
+        elements.signalCode.value = await peerSession.answerInvitation(elements.signalCode.value.trim());
+        setStatus('connecting', 'Answer ready');
+        setNotice('Send this answer code back to the person who created the invitation.');
+    } catch (error) { setNotice(`Could not answer invitation: ${error.message}`); }
+}
+
+async function completeConnection() {
+    try {
+        await peerSession.completeConnection(elements.signalCode.value.trim());
+        setStatus('connecting', 'Connecting peer');
+        setNotice('Waiting for the direct connection to open.');
+    } catch (error) { setNotice(`Could not complete connection: ${error.message}`); }
 }
 
 function handleConnectionState(state) {
@@ -163,5 +191,8 @@ elements.brushSize.addEventListener('input', (event) => {
 });
 elements.undoButton.addEventListener('click', () => sharedBoard?.undo());
 elements.clearButton.addEventListener('click', () => sharedBoard?.clear());
+elements.createOfferButton.addEventListener('click', createInvitation);
+elements.acceptOfferButton.addEventListener('click', answerInvitation);
+elements.acceptAnswerButton.addEventListener('click', completeConnection);
 window.addEventListener('beforeunload', leaveRoom);
 setRoomFromUrl();

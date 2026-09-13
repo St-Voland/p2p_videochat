@@ -11,7 +11,7 @@ WebRTC camera and microphone access works on `localhost` or over HTTPS. From the
 python3 -m http.server 8000
 ```
 
-Open `http://localhost:8000/p2p_videochat/` in two browser tabs. Enter the same room code in both tabs. The local prototype uses `BroadcastChannel` for signaling, so both tabs must share the same origin. Joining opens the board even if camera or microphone permission is denied; media is an independent enhancement.
+Open `http://localhost:8000/p2p_videochat/` in two browser tabs. Joining opens the board even if camera or microphone permission is denied; media is an independent enhancement.
 
 ## Deploy to GitHub Pages
 
@@ -19,16 +19,25 @@ The repository includes an Actions workflow at `.github/workflows/pages.yml`. Pu
 
 `https://st-voland.github.io/p2p_videochat/`
 
-GitHub Pages serves the static client over HTTPS, so camera and microphone permissions can work there. The current `BroadcastSignaling` adapter only connects tabs sharing the same browser origin; it does not connect different devices. For real remote rooms, replace it with a hosted signaling adapter such as Supabase Realtime, Firebase, or a small WebSocket service. GitHub Pages cannot run that signaling server itself.
+GitHub Pages serves the static client over HTTPS, so camera and microphone permissions can work there. No backend is used. The two browsers exchange WebRTC offer/answer codes manually, then video and board data travel directly between peers.
+
+### Connect two computers without a server
+
+1. Open the deployed page on both computers and join any room code.
+2. On computer A, choose **Create invitation**, then copy the generated code to computer B by any separate channel.
+3. On computer B, paste it and choose **Answer invitation**, then send the returned code back to computer A.
+4. On computer A, paste the answer and choose **Complete connection**.
+
+The generated codes include ICE candidates, so this exchange only happens once per connection. A public STUN server helps discover network paths; some restrictive networks still require TURN, which would be a relay service and is outside the pure no-server mode.
 
 ## Architecture
 
-- `js/signaling.js` contains the replaceable signaling boundary. `BroadcastSignaling` is a local same-origin adapter for development.
+- `js/signaling.js` contains the manual signaling boundary. The connection codes are copied outside the app; no signaling backend is involved.
 - `js/webrtc.js` owns the two-peer WebRTC offer/answer, ICE, media tracks, and ordered data channel.
 - `js/board.js` owns local strokes and snapshot/undo/clear messages.
 - `js/main.js` wires the interface, media controls, and lifecycle.
 
-For deployment across different devices, replace `BroadcastSignaling` with a managed realtime adapter that transports room presence and signaling messages. The static client must not contain private TURN credentials. Configure a TURN provider for reliable connections on restrictive networks; the current prototype includes a public STUN server for development only.
+The static client must not contain private TURN credentials. Configure a TURN provider for reliable connections on restrictive networks; the current prototype includes a public STUN server for development only.
 
 ## Current scope
 
