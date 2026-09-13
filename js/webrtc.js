@@ -46,6 +46,7 @@ export class PeerSession {
         const offer = await this.peerConnection.createOffer();
         await this.peerConnection.setLocalDescription(offer);
         await this.waitForIceGathering();
+        this.notifyVerification();
         return JSON.stringify({ type: 'offer', description: serializeDescription(this.peerConnection.localDescription) });
     }
 
@@ -56,6 +57,7 @@ export class PeerSession {
         const answer = await this.peerConnection.createAnswer();
         await this.peerConnection.setLocalDescription(answer);
         await this.waitForIceGathering();
+        this.notifyVerification();
         return JSON.stringify({ type: 'answer', description: serializeDescription(this.peerConnection.localDescription) });
     }
 
@@ -63,6 +65,7 @@ export class PeerSession {
         const answer = parseCode(code, 'answer');
         if (!this.peerConnection) throw new Error('Create an invitation first.');
         await this.peerConnection.setRemoteDescription(answer.description);
+        this.notifyVerification();
     }
 
     waitForIceGathering() {
@@ -89,6 +92,13 @@ export class PeerSession {
         this.dataChannel = null;
         this.peerConnection = null;
     }
+
+    notifyVerification() {
+        this.callbacks.onVerification?.({
+            local: fingerprintFromSdp(this.peerConnection.localDescription?.sdp),
+            remote: fingerprintFromSdp(this.peerConnection.remoteDescription?.sdp)
+        });
+    }
 }
 
 function parseCode(code, expectedType) {
@@ -100,4 +110,9 @@ function parseCode(code, expectedType) {
 
 function serializeDescription(description) {
     return { type: description.type, sdp: description.sdp };
+}
+
+function fingerprintFromSdp(sdp = '') {
+    const match = sdp.match(/^a=fingerprint:sha-256 (.+)$/m);
+    return match ? match[1].trim() : '';
 }

@@ -31,7 +31,10 @@ const elements = {
     answerCode: document.getElementById('answerCode'),
     createOfferButton: document.getElementById('createOfferButton'),
     acceptOfferButton: document.getElementById('acceptOfferButton'),
-    acceptAnswerButton: document.getElementById('acceptAnswerButton')
+    acceptAnswerButton: document.getElementById('acceptAnswerButton'),
+    localFingerprint: document.getElementById('localFingerprint'),
+    remoteFingerprint: document.getElementById('remoteFingerprint'),
+    verificationConfirmed: document.getElementById('verificationConfirmed')
 };
 
 let localStream = null;
@@ -59,6 +62,14 @@ function getPeerSession() {
         return null;
     }
     return peerSession;
+}
+
+function updateVerification(fingerprints = {}) {
+    elements.localFingerprint.textContent = fingerprints.local || 'Waiting for invitation';
+    elements.remoteFingerprint.textContent = fingerprints.remote || 'Waiting for answer';
+    const ready = Boolean(fingerprints.local && fingerprints.remote);
+    elements.verificationConfirmed.disabled = !ready;
+    if (!ready) elements.verificationConfirmed.checked = false;
 }
 
 function setRoomFromUrl() {
@@ -104,6 +115,7 @@ async function joinRoom(event) {
                 elements.boardSync.textContent = state === 'open' ? 'Peer synced' : 'Local canvas';
             },
             onData: (message) => sharedBoard?.receive(message),
+            onVerification: updateVerification,
             onError: (message) => {
                 setStatus('idle', 'Connection error');
                 setNotice(message);
@@ -220,6 +232,10 @@ elements.clearButton.addEventListener('click', () => sharedBoard?.clear());
 elements.createOfferButton.addEventListener('click', createInvitation);
 elements.acceptOfferButton.addEventListener('click', answerInvitation);
 elements.acceptAnswerButton.addEventListener('click', completeConnection);
+elements.verificationConfirmed.addEventListener('change', (event) => {
+    if (event.target.checked) setNotice('Peer identity confirmed. The connection is trusted for this session.');
+});
 window.addEventListener('beforeunload', leaveRoom);
 setRoomFromUrl();
 setConnectionControlsEnabled(false);
+updateVerification();

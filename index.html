@@ -86,6 +86,15 @@
                             <button class="control-button" id="acceptAnswerButton" type="button">Complete connection</button>
                         </div>
                     </div>
+                    <div class="verification-panel">
+                        <p class="verification-title">Peer verification</p>
+                        <p class="microcopy">Compare your identity code with the peer identity code on the other device using a separate trusted channel.</p>
+                        <div class="verification-codes">
+                            <div><span>Your identity code</span><code id="localFingerprint">Waiting for invitation</code></div>
+                            <div><span>Peer identity code</span><code id="remoteFingerprint">Waiting for answer</code></div>
+                        </div>
+                        <label class="verification-check"><input id="verificationConfirmed" type="checkbox" disabled> I compared the codes and they match</label>
+                    </div>
                 </div>
                 <p class="notice" id="notice" role="status">Joining a room opens the board and requests camera access.</p>
             </div>

@@ -30,6 +30,15 @@ GitHub Pages serves the static client over HTTPS, so camera and microphone permi
 
 The generated codes include ICE candidates, so this exchange only happens once per connection. A public STUN server helps discover network paths; some restrictive networks still require TURN, which would be a relay service and is outside the pure no-server mode.
 
+### Verify the peer
+
+After exchanging codes, each device shows **Your identity code** and **Peer identity code**. Compare them through a separate trusted channel, such as a voice call:
+
+- Computer A's **Your identity code** must equal Computer B's **Peer identity code**.
+- Computer B's **Your identity code** must equal Computer A's **Peer identity code**.
+
+Only check **I compared the codes and they match** after both comparisons agree. These are DTLS fingerprints, not passwords; they authenticate the WebRTC peer but do not contain camera, microphone, or board data.
+
 ## Architecture
 
 - `js/signaling.js` contains the manual signaling boundary. The connection codes are copied outside the app; no signaling backend is involved.

@@ -94,6 +94,14 @@ h2 { margin: 0; font-size: 1.2rem; letter-spacing: -.02em; }
 .signal-field textarea:focus { border-color: var(--coral); outline: none; box-shadow: 0 0 0 3px rgba(232,93,63,.12); }
 .signal-field > .control-button { margin-top: 8px; }
 .control-button:disabled { cursor: not-allowed; opacity: .45; }
+.verification-panel { margin-top: 18px; padding: 13px; background: var(--sage); border: 1px solid #b8c8b2; }
+.verification-title { margin: 0 0 7px; font-size: 12px; font-weight: 600; }
+.verification-codes { display: grid; gap: 8px; margin: 12px 0; }
+.verification-codes div { display: grid; gap: 4px; }
+.verification-codes span { color: var(--muted); font-family: 'DM Mono', monospace; font-size: 9px; text-transform: uppercase; letter-spacing: .08em; }
+.verification-codes code { overflow-wrap: anywhere; color: var(--ink); font-family: 'DM Mono', monospace; font-size: 10px; line-height: 1.45; }
+.verification-check { display: flex; align-items: flex-start; gap: 8px; color: var(--ink); font-size: 11px; line-height: 1.4; }
+.verification-check input { margin-top: 2px; accent-color: var(--coral); }
 .board-heading { margin-bottom: 18px; }
 .sync-label { color: var(--muted); font-size: 10px; }
 .board-tools { gap: 14px; margin-bottom: 10px; padding: 9px 12px; background: var(--panel); border: 1px solid var(--line); }
